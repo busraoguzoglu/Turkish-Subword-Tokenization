@@ -1,7 +1,35 @@
 import argparse
 import glob
-
+import collections, nltk
 from tokenizers import BertWordPieceTokenizer
+import math
+
+# here you construct the unigram language model
+def unigram(tokens):
+    model = collections.defaultdict(lambda: 0.01)
+    for f in tokens:
+        try:
+            model[f] += 1
+        except KeyError:
+            model[f] = 1
+            continue
+    N = float(sum(model.values()))
+    for word in model:
+        model[word] = model[word] / N
+    return model
+
+#computes perplexity of the unigram model on a testset
+def perplexity(testset, model):
+    perplexity = 1
+    N = len(testset)
+    for i in range(90):
+    #for word in testset:
+        word = testset[i]
+        print(word)
+        perplexity = perplexity * (1/model[word])
+        print(perplexity)
+    perplexity = pow(perplexity, 1/float(N))
+    return perplexity
 
 def main():
 
@@ -28,6 +56,20 @@ def main():
 
     vocab = tokenizer.get_vocab()
     print(vocab)
+
+    # Perplexity:
+    # Tokenize training and test corpus:
+    with open("UD_Turkish-Penn/tr_penn-ud-train.txt", encoding="utf-8") as f:
+        train_contents = f.read()
+    with open("UD_Turkish-Penn/tr_penn-ud-test.txt", encoding="utf-8") as f:
+        test_contents = f.read()
+
+    train_tokenized = tokenizer.encode(train_contents)
+    test_tokenized = tokenizer.encode(test_contents)
+
+    # Get unigram model to calculate perplexity
+    model = unigram(train_tokenized.tokens)
+    print('Perplexity:', perplexity(test_tokenized.tokens, model))
 
 if __name__ == '__main__':
     main()

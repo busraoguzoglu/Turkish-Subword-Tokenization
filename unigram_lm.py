@@ -1,6 +1,7 @@
 from tokenizers import Tokenizer, models, trainers
 import collections, nltk
 
+
 # here you construct the unigram language model
 def unigram(tokens):
     model = collections.defaultdict(lambda: 0.01)
@@ -17,12 +18,14 @@ def unigram(tokens):
 
 #computes perplexity of the unigram model on a testset
 def perplexity(testset, model):
-    #testset = testset.split()
     perplexity = 1
-    N = 0
-    for word in testset:
-        N += 1
+    N = len(testset)
+    for i in range(90):
+    #for word in testset:
+        word = testset[i]
+        print(word)
         perplexity = perplexity * (1/model[word])
+        print(perplexity)
     perplexity = pow(perplexity, 1/float(N))
     return perplexity
 
@@ -61,7 +64,7 @@ def main():
 
     # Get unigram model to calculate perplexity
     model = unigram(train_tokenized.tokens)
-    print(perplexity(test_tokenized.tokens, model))
+    print('Perplexity:', perplexity(test_tokenized.tokens, model))
 
 if __name__ == '__main__':
     main()

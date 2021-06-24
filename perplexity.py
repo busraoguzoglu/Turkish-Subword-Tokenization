@@ -3,6 +3,9 @@ import collections, nltk
 # https://sjmielke.com/comparing-perplexities.htm
 
 # here you construct the unigram language model
+import math
+
+
 def unigram(tokens):
     model = collections.defaultdict(lambda: 0.01)
     for f in tokens:
@@ -24,6 +27,8 @@ def perplexity(testset, model):
     for word in testset:
         N += 1
         perplexity = perplexity * (1/model[word])
+        #perplexity = -math.log(perplexity)
+        print(1 / model[word])
     perplexity = pow(perplexity, 1/float(N))
     return perplexity
 
