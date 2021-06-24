@@ -5,13 +5,7 @@ from tokenizers import BertWordPieceTokenizer
 
 def main():
 
-    # Initialize an empty tokenizer
-    tokenizer = BertWordPieceTokenizer(
-        clean_text=True,
-        handle_chinese_chars=True,
-        strip_accents=True,
-        lowercase=True,
-    )
+    tokenizer = BertWordPieceTokenizer(clean_text=True, strip_accents=True, lowercase=True,)
 
     # And then train
     tokenizer.train(
@@ -31,6 +25,9 @@ def main():
 
     decoded = tokenizer.decode(encoding.ids)
     print("Decoded string: {}".format(decoded))
+
+    vocab = tokenizer.get_vocab()
+    print(vocab)
 
 if __name__ == '__main__':
     main()
