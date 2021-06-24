@@ -27,9 +27,9 @@ def perplexity(testset, model):
     for i in range(90):
     #for word in testset:
         word = testset[i]
-        print(word)
+        #print(word)
         perplexity = perplexity * (1/model[word])
-        print(perplexity)
+        #print(perplexity)
     perplexity = pow(perplexity, 1/float(N))
     return perplexity
 
@@ -58,7 +58,7 @@ def main():
 
     # Get the subword vocabulary:
     vocab = tokenizer.get_vocab()
-    print(vocab)
+    #print(vocab)
 
     # Tokenize training and test corpus:
     with open("UD_Turkish-Penn/tr_penn-ud-train.txt", encoding="utf-8") as f:

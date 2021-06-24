@@ -23,9 +23,9 @@ def perplexity(testset, model):
     for i in range(90):
     #for word in testset:
         word = testset[i]
-        print(word)
+        #print(word)
         perplexity = perplexity * (1/model[word])
-        print(perplexity)
+        #print(perplexity)
     perplexity = pow(perplexity, 1/float(N))
     return perplexity
 
@@ -47,10 +47,10 @@ def main():
     print("Decoded string: {}".format(decoded))
 
     vocab = tokenizer.get_vocab()
-    print(vocab)
+    #print(vocab)
 
     # Can get count of each word like this.
-    print(vocab['kendi'])
+    #print(vocab['kendi'])
 
     # Perplexity:
     # Tokenize training and test corpus:
