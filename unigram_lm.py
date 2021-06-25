@@ -1,41 +1,29 @@
 from tokenizers import Tokenizer, models, trainers
-import collections, nltk
+import collections
 
 
-# here you construct the unigram language model
 def unigram(tokens):
     model = collections.defaultdict(lambda: 0.01)
     for f in tokens:
-        try:
-            model[f] += 1
-        except KeyError:
-            model[f] = 1
-            continue
+        model[f] += 1
     N = float(sum(model.values()))
     for word in model:
         model[word] = model[word] / N
     return model
 
-#computes perplexity of the unigram model on a testset
 def perplexity(testset, model):
     perplexity = 1
     N = len(testset)
-    for i in range(90):
-    #for word in testset:
+    for i in range(80):
         word = testset[i]
-        #print(word)
         perplexity = perplexity * (1/model[word])
-        #print(perplexity)
     perplexity = pow(perplexity, 1/float(N))
     return perplexity
 
 def main():
 
     tokenizer = Tokenizer(models.Unigram())
-    trainer = trainers.UnigramTrainer(
-        unk_token="<unk>",
-        special_tokens=["<s>", "</s>", "<unk>", "<pad>", "<mask>"]
-    )
+    trainer = trainers.UnigramTrainer(vocab_size=25000)
     tokenizer.train(files=["UD_Turkish-Penn/tr_penn-ud-train.txt", "UD_Turkish-Penn/tr_penn-ud-dev.txt"], trainer=trainer)
 
     print("Trained vocab size: {}".format(tokenizer.get_vocab_size()))
@@ -47,10 +35,6 @@ def main():
     print("Decoded string: {}".format(decoded))
 
     vocab = tokenizer.get_vocab()
-    #print(vocab)
-
-    # Can get count of each word like this.
-    #print(vocab['kendi'])
 
     # Perplexity:
     # Tokenize training and test corpus:

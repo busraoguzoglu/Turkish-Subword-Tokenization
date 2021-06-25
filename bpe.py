@@ -4,34 +4,8 @@ from tokenizers.models import BPE
 from tokenizers.normalizers import Lowercase, NFKC, Sequence
 from tokenizers.pre_tokenizers import ByteLevel
 from tokenizers.trainers import BpeTrainer
-import collections, nltk
+from unigram_lm import unigram, perplexity
 
-# here you construct the unigram language model
-def unigram(tokens):
-    model = collections.defaultdict(lambda: 0.01)
-    for f in tokens:
-        try:
-            model[f] += 1
-        except KeyError:
-            model[f] = 1
-            continue
-    N = float(sum(model.values()))
-    for word in model:
-        model[word] = model[word] / N
-    return model
-
-#computes perplexity of the unigram model on a testset
-def perplexity(testset, model):
-    perplexity = 1
-    N = len(testset)
-    for i in range(90):
-    #for word in testset:
-        word = testset[i]
-        #print(word)
-        perplexity = perplexity * (1/model[word])
-        #print(perplexity)
-    perplexity = pow(perplexity, 1/float(N))
-    return perplexity
 
 def main():
 
@@ -41,16 +15,18 @@ def main():
     tokenizer.decoder = ByteLevelDecoder()
 
     trainer = BpeTrainer(vocab_size=25000, show_progress=True, initial_alphabet=ByteLevel.alphabet())
-    tokenizer.train(files=["UD_Turkish-Penn/tr_penn-ud-train.txt"], trainer=trainer)
+    tokenizer.train(files=["UD_Turkish-Penn/tr_penn-ud-train.txt", "UD_Turkish-Penn/tr_penn-ud-dev.txt"], trainer=trainer)
 
     print("Trained vocab size: {}".format(tokenizer.get_vocab_size()))
 
+    # If we want to save the trained model
     tokenizer.model.save('.')
 
-    # Test
+    # If we want to use the saved model
     tokenizer.model = BPE('vocab.json', 'merges.txt')
-    encoding = tokenizer.encode("Merhaba bu bir kelime")
 
+    # Test
+    encoding = tokenizer.encode("Merhaba bu bir kelime")
     print("Encoded string: {}".format(encoding.tokens))
 
     decoded = tokenizer.decode(encoding.ids)
@@ -58,7 +34,6 @@ def main():
 
     # Get the subword vocabulary:
     vocab = tokenizer.get_vocab()
-    #print(vocab)
 
     # Tokenize training and test corpus:
     with open("UD_Turkish-Penn/tr_penn-ud-train.txt", encoding="utf-8") as f:

@@ -1,50 +1,10 @@
-import argparse
-import glob
-import collections, nltk
 from tokenizers import BertWordPieceTokenizer
-import math
-
-# here you construct the unigram language model
-def unigram(tokens):
-    model = collections.defaultdict(lambda: 0.01)
-    for f in tokens:
-        try:
-            model[f] += 1
-        except KeyError:
-            model[f] = 1
-            continue
-    N = float(sum(model.values()))
-    for word in model:
-        model[word] = model[word] / N
-    return model
-
-#computes perplexity of the unigram model on a testset
-def perplexity(testset, model):
-    perplexity = 1
-    N = len(testset)
-    for i in range(90):
-    #for word in testset:
-        word = testset[i]
-        #print(word)
-        perplexity = perplexity * (1/model[word])
-        #print(perplexity)
-    perplexity = pow(perplexity, 1/float(N))
-    return perplexity
+from unigram_lm import unigram, perplexity
 
 def main():
 
-    tokenizer = BertWordPieceTokenizer(clean_text=True, strip_accents=True, lowercase=True,)
-
-    # And then train
-    tokenizer.train(
-        files=["UD_Turkish-Penn/tr_penn-ud-train.txt"],
-        vocab_size=10000,
-        min_frequency=2,
-        show_progress=True,
-        special_tokens=["[PAD]", "[UNK]", "[CLS]", "[SEP]", "[MASK]"],
-        limit_alphabet=1000,
-        wordpieces_prefix="##",
-    )
+    tokenizer = BertWordPieceTokenizer(clean_text=True, strip_accents=True, lowercase=True)
+    tokenizer.train(files=["UD_Turkish-Penn/tr_penn-ud-train.txt", "UD_Turkish-Penn/tr_penn-ud-dev.txt"], min_frequency=2, vocab_size=25000, show_progress=True)
 
     print("Trained vocab size: {}".format(tokenizer.get_vocab_size()))
 
@@ -55,7 +15,6 @@ def main():
     print("Decoded string: {}".format(decoded))
 
     vocab = tokenizer.get_vocab()
-    #print(vocab)
 
     # Perplexity:
     # Tokenize training and test corpus:
